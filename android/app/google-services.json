@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "178885454844",
+    "project_id": "authapp-3bd50",
+    "storage_bucket": "authapp-3bd50.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178885454844:android:f6e810bbe33059998d2079",
+        "android_client_info": {
+          "package_name": "com.modern_auth_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAt2S3qTtbxZdGv7Zc28skDZMaO6P_Odzo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
