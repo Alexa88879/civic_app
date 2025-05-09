@@ -48,6 +48,9 @@ class _IssuesListScreenState extends State<IssuesListScreen> {
               final address = issue['location']?['address'] ?? 'No address';
               final status = issue['status'] ?? 'Pending';
               final timestamp = issue['timestamp'];
+              final upvotedBy = issue['upvotedBy'] ?? [];
+              final currentUser = FirebaseAuth.instance.currentUser;
+              final hasUpvoted = currentUser != null && upvotedBy.contains(currentUser.uid);
 
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -65,73 +68,89 @@ class _IssuesListScreenState extends State<IssuesListScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => FullScreenImageView(imageUrl: imageUrl),
+                                    builder: (_) =>
+                                        FullScreenImageView(imageUrl: imageUrl),
                                   ),
                                 );
                               }
                             },
                             child: imageUrl.isNotEmpty
-                                ? Image.network(imageUrl, width: 60, height: 60, fit: BoxFit.cover)
+                                ? Image.network(imageUrl,
+                                    width: 60, height: 60, fit: BoxFit.cover)
                                 : const Icon(Icons.image_not_supported, size: 60),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
-                            child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            child: Text(title,
+                                style: const TextStyle(fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
                       Text('📍 Address: $address'),
-                      if (issue['location']?['lat'] != null && issue['location']?['lng'] != null)
-                        Text('🌐 Coordinates: ${issue['location']['lat']}, ${issue['location']['lng']}'),
+                      if (issue['location']?['lat'] != null &&
+                          issue['location']?['lng'] != null)
+                        Text(
+                            '🌐 Coordinates: ${issue['location']['lat']}, ${issue['location']['lng']}'),
                       Text('🕒 ${_formatTimestamp(timestamp)}'),
                       Text('📌 Status: $status'),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.thumb_up),
-onPressed: () async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) return;
+                            icon: Icon(
+                              Icons.thumb_up,
+                              color: hasUpvoted ? Colors.blue : Colors.grey,
+                            ),
+                            onPressed: () async {
+                              if (currentUser == null) return;
 
-  final docId = issues[index].id;
-  final docRef = FirebaseFirestore.instance.collection('issues').doc(docId);
+                              final docId = issues[index].id;
+                              final docRef = FirebaseFirestore.instance
+                                  .collection('issues')
+                                  .doc(docId);
+                              final messenger = ScaffoldMessenger.of(context);
 
-  // 👇 Cache context before any async gaps
-  final messenger = ScaffoldMessenger.of(context);
+                              try {
+                                await FirebaseFirestore.instance
+                                    .runTransaction((transaction) async {
+                                  final snapshot =
+                                      await transaction.get(docRef);
+                                  if (!snapshot.exists) return;
 
-  try {
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      final snapshot = await transaction.get(docRef);
-      if (!snapshot.exists) return;
+                                  final currentUpvotes =
+                                      snapshot.get('upvotes') ?? 0;
+                                  final List<dynamic> currentUpvotedBy =
+                                      snapshot.get('upvotedBy') ?? [];
 
-      final currentUpvotes = snapshot.get('upvotes') ?? 0;
-      final List<dynamic> upvotedBy = snapshot.get('upvotedBy') ?? [];
+                                  if (currentUpvotedBy
+                                      .contains(currentUser.uid)) {
+                                    messenger.showSnackBar(const SnackBar(
+                                        content: Text(
+                                            'You have already upvoted this issue.')));
+                                    return;
+                                  }
 
-      if (upvotedBy.contains(user.uid)) {
-        // 👇 Use cached messenger (no context after await)
-        messenger.showSnackBar(
-          const SnackBar(content: Text('You have already upvoted this issue.')),
-        );
-        return;
-      }
-
-      transaction.update(docRef, {
-        'upvotes': currentUpvotes + 1,
-        'upvotedBy': FieldValue.arrayUnion([user.uid]),
-      });
-    });
-  } catch (e) {
-    // 👇 Use cached messenger again
-    messenger.showSnackBar(
-      SnackBar(content: Text('Failed to upvote: $e')),
-    );
-  }
-},
-
+                                  transaction.update(docRef, {
+                                    'upvotes': currentUpvotes + 1,
+                                    'upvotedBy': FieldValue.arrayUnion(
+                                        [currentUser.uid]),
+                                  });
+                                });
+                              } catch (e) {
+                                messenger.showSnackBar(SnackBar(
+                                    content: Text('Failed to upvote: $e')));
+                              }
+                            },
                           ),
-                          Text('${issue['upvotes'] ?? 0}'),
+                          Text(
+                            '${issue['upvotes'] ?? 0}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  hasUpvoted ? Colors.blue : Colors.black,
+                            ),
+                          ),
                         ],
                       ),
                     ],
