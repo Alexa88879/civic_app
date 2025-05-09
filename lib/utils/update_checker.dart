@@ -59,12 +59,24 @@ class UpdateChecker {
     return false;
   }
 
-  static void _launchApkUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      debugPrint('Could not launch update URL: $url');
+    static void _launchApkUrl(String url) async {
+      final uri = Uri.parse(url);
+
+      try {
+        // Try to launch in external browser
+        bool launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+        // Fallback to platform default (e.g., in-app browser or system default handler)
+        if (!launched) {
+          launched = await launchUrl(uri, mode: LaunchMode.platformDefault);
+        }
+
+        if (!launched) {
+          debugPrint('No handler could open URL: $url');
+        }
+      } catch (e) {
+        debugPrint('Failed to launch update URL: $e');
+      }
     }
-  }
+
 }
