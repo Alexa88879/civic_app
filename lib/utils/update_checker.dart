@@ -1,13 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class UpdateChecker {
-  static const String currentVersion = '1.0.0'; // Your current app version
   static const String versionUrl = 'https://raw.githubusercontent.com/Alexa88879/civic_app/main/version.json';
 
   static Future<void> checkForUpdate(BuildContext context) async {
     try {
+      final info = await PackageInfo.fromPlatform();
+      final currentVersion = info.version;
+
       final response = await http.get(Uri.parse(versionUrl));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -15,7 +19,6 @@ class UpdateChecker {
         final apkUrl = data['apk_url'];
 
         if (_isNewerVersion(latestVersion, currentVersion)) {
-          // 🔐 Guard context use
           if (!context.mounted) return;
 
           showDialog(
@@ -57,8 +60,11 @@ class UpdateChecker {
   }
 
   static void _launchApkUrl(String url) async {
-    // Open the download URL using url_launcher
-    // You must add url_launcher to pubspec.yaml and import it here:
-    // import 'package:url_launcher/url_launcher.dart';
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      debugPrint('Could not launch update URL: $url');
+    }
   }
 }
