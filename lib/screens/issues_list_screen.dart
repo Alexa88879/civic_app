@@ -89,9 +89,9 @@ class _IssuesListScreenState extends State<IssuesListScreen> {
                       const SizedBox(height: 8),
                       Text('📍 Address: $address'),
                       if (issue['location']?['lat'] != null &&
-                          issue['location']?['lng'] != null)
+                          issue['location']?['long'] != null)
                         Text(
-                            '🌐 Coordinates: ${issue['location']['lat']}, ${issue['location']['lng']}'),
+                            '🌐 Coordinates: ${issue['location']['lat']}, ${issue['location']['long']}'),
                       Text('🕒 ${_formatTimestamp(timestamp)}'),
                       Text('📌 Status: $status'),
                       Row(

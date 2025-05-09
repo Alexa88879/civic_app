@@ -120,7 +120,7 @@ Future<void> _initializeCameraAndLocation() async {
     final responseData = json.decode(await response.stream.bytesToString());
     final imageUrl = responseData['secure_url'];
 
-    // Step 2: Convert lat/lng to address
+    // Step 2: Convert lat/long to address
     String address = '';
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(
@@ -145,7 +145,7 @@ Future<void> _initializeCameraAndLocation() async {
       'timestamp': FieldValue.serverTimestamp(),
       'location': {
         'lat': _currentPosition!.latitude,
-        'lng': _currentPosition!.longitude,
+        'long': _currentPosition!.longitude,
         'address': address,
       },
       'upvotes': 0,
@@ -202,7 +202,7 @@ Future<void> _initializeCameraAndLocation() async {
                     _currentAddress != null
                         ? _currentAddress!
                         : _currentPosition != null
-                            ? 'Lat: ${_currentPosition!.latitude}, Lng: ${_currentPosition!.longitude}'
+                            ? 'Lat: ${_currentPosition!.latitude}, Long: ${_currentPosition!.longitude}'
                             : 'Location not available',
                   ),
                 ],
