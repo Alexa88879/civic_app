@@ -139,6 +139,7 @@ Future<void> _initializeCameraAndLocation() async {
     // Step 3: Save to Firestore
     await FirebaseFirestore.instance.collection('issues').add({
       'title': title,
+      'upvotedBy': [],
       'description': '',
       'imageUrl': imageUrl,
       'timestamp': FieldValue.serverTimestamp(),
