@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../utils/validators.dart';
 import '../widgets/custom_button.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../services/auth_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -15,6 +16,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
+  final AuthService _authService = AuthService();
   bool isLoading = false;
 
   void _signUp() async {
@@ -59,10 +61,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
         SnackBar(content: Text(e.message ?? 'Sign up failed')),
       );
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An unexpected error occurred')),
       );
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
+  void _signUpWithGoogle() async {
+    setState(() => isLoading = true);
+
+    try {
+      final userCredential = await _authService.signInWithGoogle();
+
+      if (userCredential != null && mounted) {
+        Navigator.pushReplacementNamed(context, '/welcome');
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Google sign-in was cancelled')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Google sign-in failed')),
+        );
+      }
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
@@ -93,9 +119,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 20),
             isLoading
                 ? const CircularProgressIndicator()
-                : CustomButton(
-                    text: 'Sign Up',
-                    onPressed: _signUp,
+                : Column(
+                    children: [
+                      CustomButton(
+                        text: 'Sign Up',
+                        onPressed: _signUp,
+                      ),
+                      const SizedBox(height: 10),
+                      CustomButton(
+                        text: 'Continue with Google',
+                        onPressed: _signUpWithGoogle,
+                      ),
+                    ],
                   ),
           ],
         ),
