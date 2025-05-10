@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../utils/validators.dart';
 import '../services/auth_service.dart';
-import '../widgets/custom_button_home_screen.dart';
-import '../widgets/custom_button_google_icon.dart';
+import '../widgets/custom_button_all_screen.dart';
+import '../widgets/custom_button_animated_icon.dart';
 
 
 class SignUpScreen extends StatefulWidget {

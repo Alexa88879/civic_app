@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../utils/validators.dart';
-import '../widgets/custom_button.dart';
 import '../services/auth_service.dart';
+import '../widgets/custom_button_all_screen.dart';
+import '../widgets/custom_button_animated_icon.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -85,42 +86,141 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            isLoading
-                ? const CircularProgressIndicator()
-                : Column(
-                    children: [
-                      CustomButton(
-                        text: 'Login',
-                        onPressed: _login,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'assets/icon/icon.jpg',
+                    height: 80,
+                    width: 80,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                const Text(
+                  'Welcome back',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Login with your email or Google account',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14, color: Colors.black54),
+                ),
+                const SizedBox(height: 32),
+
+                /// Email
+                TextField(
+                  controller: emailController,
+                  decoration: _inputDecoration('Email', const Icon(Icons.email)),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 16),
+
+                /// Password
+                TextField(
+                  controller: passwordController,
+                  decoration: _inputDecoration('Password', const Icon(Icons.lock)),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 24),
+
+                isLoading
+                    ? const CircularProgressIndicator()
+                    : SizedBox(
+                        width: double.infinity,
+                        child: CustomButton(
+                          text: 'Login',
+                          onPressed: _login,
+                          buttonColor: Colors.black,
+                          textColor: Colors.white,
+                          height: 48,
+                          width: double.infinity,
+                        ),
                       ),
-                      const SizedBox(height: 10),
-                      CustomButton(
-                        text: 'Continue with Google',
-                        onPressed: _loginWithGoogle,
+
+                const SizedBox(height: 24),
+
+                Row(
+                  children: const [
+                    Expanded(child: Divider(thickness: 1)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text('or'),
+                    ),
+                    Expanded(child: Divider(thickness: 1)),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                /// Google Sign-In
+                CustomButtonWithIcon(
+                  text: 'Continue with Google',
+                  onPressed: _loginWithGoogle,
+                  icon: Image.asset('assets/icon/google.png', height: 24),
+                  backgroundColor: const Color(0xFFF2F2F2),
+                  textColor: Colors.black,
+                ),
+
+                const SizedBox(height: 24),
+
+                const Text.rich(
+                  TextSpan(
+                    text: 'By continuing, you agree to our ',
+                    children: [
+                      TextSpan(
+                        text: 'Terms of Service',
+                        style: TextStyle(decoration: TextDecoration.underline),
+                      ),
+                      TextSpan(text: ' and '),
+                      TextSpan(
+                        text: 'Privacy Policy',
+                        style: TextStyle(decoration: TextDecoration.underline),
                       ),
                     ],
                   ),
-          ],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
+
+  InputDecoration _inputDecoration(String label, Icon icon) {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: const Color(0xFFF9F9F9),
+      prefixIcon: icon,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.grey),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.grey),
+      ),
+      contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+    );
+  }
+
 }

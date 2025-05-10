@@ -20,7 +20,7 @@
 
 
     <application
-        android:label="modern_auth_app"
+        android:label="Nivaran"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
