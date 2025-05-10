@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../utils/validators.dart';
-import '../widgets/custom_button.dart';
 import '../services/auth_service.dart';
+import '../widgets/custom_button_home_screen.dart';
+import '../widgets/custom_button_google_icon.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -177,23 +179,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ? const CircularProgressIndicator()
                     : SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
+                        child: CustomButton(
+                          text: 'Continue',
                           onPressed: _signUp,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            textStyle: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          child: const Text(
-                            'Continue',
-                            style: TextStyle(color: Colors.white,
-                            fontWeight: FontWeight.w600),
-                          ),
+                          buttonColor: Colors.black,
+                          textColor: Colors.white,
+                          height: 48,
+                          width: double.infinity,
                         ),
+
                       ),
 
                 const SizedBox(height: 24),
@@ -214,30 +208,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 /// Google Sign-In
                 SizedBox(
                   width: double.infinity,
-                  child: TextButton.icon(
-                    onPressed: _signUpWithGoogle,
-                    icon: Image.asset('assets/icon/google.png', height: 24),
-                    label: const Text(
-                      'Continue with Google',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                    style: TextButton.styleFrom(
+                    child: CustomButtonWithIcon(
+                      text: 'Continue with Google',
+                      onPressed: _signUpWithGoogle,
+                      icon: Image.asset('assets/icon/google.png', height: 24),
                       backgroundColor: const Color(0xFFF2F2F2),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: const BorderSide(color: Colors.grey),
-                      ),
+                      textColor: Colors.black,
                     ),
-                  ),
                 ),
-
                 const SizedBox(height: 24),
-
                 const Text.rich(
                   TextSpan(
                     text: 'By continuing, you agree to our ',

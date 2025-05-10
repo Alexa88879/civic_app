@@ -4,6 +4,8 @@ class CustomButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;
   final Color buttonColor;
+  final Color textColor;
+  final FontWeight fontWeight;
   final double height;
   final double width;
 
@@ -11,6 +13,8 @@ class CustomButton extends StatefulWidget {
     required this.text,
     required this.onPressed,
     this.buttonColor = Colors.blue,
+    this.textColor = Colors.white,
+    this.fontWeight = FontWeight.w600,
     this.height = 60.0,
     this.width = 300,
     super.key,
@@ -23,23 +27,9 @@ class CustomButton extends StatefulWidget {
 class _CustomButtonState extends State<CustomButton> with SingleTickerProviderStateMixin {
   bool _isPressed = false;
 
-  void _onTapDown(_) {
-    setState(() {
-      _isPressed = true;
-    });
-  }
-
-  void _onTapUp(_) {
-    setState(() {
-      _isPressed = false;
-    });
-  }
-
-  void _onTapCancel() {
-    setState(() {
-      _isPressed = false;
-    });
-  }
+  void _onTapDown(_) => setState(() => _isPressed = true);
+  void _onTapUp(_) => setState(() => _isPressed = false);
+  void _onTapCancel() => setState(() => _isPressed = false);
 
   @override
   Widget build(BuildContext context) {
@@ -64,10 +54,10 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
           alignment: Alignment.center,
           child: Text(
             widget.text,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: widget.textColor,
               fontSize: 18,
-              fontWeight: FontWeight.w600,
+              fontWeight: widget.fontWeight,
             ),
           ),
         ),
