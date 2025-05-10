@@ -1,40 +1,75 @@
 import 'package:flutter/material.dart';
 
-class CustomButton extends StatelessWidget {
+class CustomButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;
-  final Color buttonColor; // Added button color
-  final double height; // Added height
-  final double width;  // Added width
+  final Color buttonColor;
+  final double height;
+  final double width;
 
   const CustomButton({
     required this.text,
     required this.onPressed,
-    this.buttonColor = Colors.blue, // Default to blue if no color provided
-    this.height = 60.0, // Default height
-    this.width = double.infinity, // Default to full width
+    this.buttonColor = Colors.blue,
+    this.height = 60.0,
+    this.width = 300,
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: width,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: buttonColor, // Set button background color
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30), // Rounded corners
-          ),
-        ),
-        onPressed: onPressed,
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18),
+  State<CustomButton> createState() => _CustomButtonState();
+}
 
+class _CustomButtonState extends State<CustomButton> with SingleTickerProviderStateMixin {
+  bool _isPressed = false;
+
+  void _onTapDown(_) {
+    setState(() {
+      _isPressed = true;
+    });
+  }
+
+  void _onTapUp(_) {
+    setState(() {
+      _isPressed = false;
+    });
+  }
+
+  void _onTapCancel() {
+    setState(() {
+      _isPressed = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _isPressed ? Colors.grey[800]! : widget.buttonColor;
+
+    return AnimatedScale(
+      scale: _isPressed ? 0.96 : 1.0,
+      duration: const Duration(milliseconds: 100),
+      child: InkWell(
+        onTap: widget.onPressed,
+        onTapDown: _onTapDown,
+        onTapUp: _onTapUp,
+        onTapCancel: _onTapCancel,
+        borderRadius: BorderRadius.circular(30),
+        child: Container(
+          height: widget.height,
+          width: widget.width,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            widget.text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ),
     );
