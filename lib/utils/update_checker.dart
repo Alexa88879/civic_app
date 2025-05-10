@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class UpdateChecker {
-  static const String versionUrl = 'https://raw.githubusercontent.com/Alexa88879/civic_app/main/version.json';
+  static const String versionUrl = 'https://raw.githubusercontent.com/Alexa88879/Nivaran/main/version.json';
 
   static Future<void> checkForUpdate(BuildContext context) async {
     try {
